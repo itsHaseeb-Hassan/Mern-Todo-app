@@ -1,6 +1,7 @@
 import User from '../models/userModel.js'
 import createHttpError from 'http-errors'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 const createUser=async(req,res,next)=>{
 
@@ -24,7 +25,7 @@ const createUser=async(req,res,next)=>{
             return next(res.json({err}))
         }
     } catch (error) {
-        const err=createHttpError(500,"Internal Server Error")
+        const err=createHttpError(500,"Existing User Check Failed")
         return next(res.json({err}))
     }
 // Hash Password
@@ -37,9 +38,20 @@ const createUser=async(req,res,next)=>{
         password:hashedPassword
     })
    } catch (error) {
-     const err=createHttpError(500,"Internal Server Error")
+     const err=createHttpError(500,"User Creation Failed")
      return next(res.json({err}))
    }
+// Genrate Token refreshToken and accessToken
 
+try {
+    const accessToken= jwt.sign({id:newUser._id},process.env.ACCESS_TOKEN_SECRET,{expiresIn:'15m'})
+    const refreshToken= jwt.sign({id:newUser._id},process.env.REFRESH_TOKEN_SECRET,{expiresIn:'1d'})
+    await newUser.updateOne({refreshToken})
+    res.status(201).json({accessToken,refreshToken})  
+} catch (error) {
+    const err=createHttpError(500,"Token Generation Failed")
+    return next(res.json({err}))
+}
 
 }
+export {createUser}
