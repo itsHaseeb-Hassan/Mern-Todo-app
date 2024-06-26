@@ -44,8 +44,8 @@ const createUser=async(req,res,next)=>{
 // Genrate Token refreshToken and accessToken
 
 try {
-    const accessToken= jwt.sign({id:newUser._id},process.env.ACCESS_TOKEN_SECRET,{expiresIn:'15m'})
-    const refreshToken= jwt.sign({id:newUser._id},process.env.REFRESH_TOKEN_SECRET,{expiresIn:'1d'})
+    const accessToken= jwt.sign({id:newUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'15m'})
+    const refreshToken= jwt.sign({id:newUser._id},process.env.JWT_SECRET_REFRESH,{expiresIn:'1d'})
     await newUser.updateOne({refreshToken})
     res.status(201).json({accessToken,refreshToken})  
 } catch (error) {
@@ -54,4 +54,37 @@ try {
 }
 
 }
-export {createUser}
+
+// login
+ const loginUser=async(req,res,next)=>{
+
+    const {email,password}=req.body
+    let existingUser
+    try {
+        existingUser=await User.findOne({email})
+        if(!existingUser){
+            const err=createHttpError(400,"User Does Not Exist")
+            return next(res.json({err}))
+        }
+    } catch (error) {
+        const err=createHttpError(500,"Login Failed")
+        return next(res.json({err}))
+    }
+    // Compare Password
+    const isPasswordCorrect=await bcrypt.compare(password,existingUser.password)
+    if(!isPasswordCorrect){
+        const err=createHttpError(400,"Wrong Password")
+        return next(res.json({err}))
+    }
+    // Genrate Token
+    try {
+        const accessToken= jwt.sign({id:existingUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'15m'})
+        const refreshToken= jwt.sign({id:existingUser._id},process.env.JWT_SECRET_REFRESH,{expiresIn:'1d'})
+        await existingUser.updateOne({refreshToken})
+        res.status(201).json({accessToken,refreshToken})  
+    } catch (error) {
+        const err=createHttpError(500,"Token Generation Failed")
+        return next(res.json({err}))
+    }
+ }
+export {createUser,loginUser}
