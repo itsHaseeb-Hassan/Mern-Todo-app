@@ -1,11 +1,12 @@
 import React from 'react'
 
-const FormInput = ({ text,type,placeholder,value,onChange}) => {
+const FormInput = ({ text,type,placeholder,value,onChange ,name}) => {
   return (
     <div className='my-3'>
       <label htmlFor={placeholder} className='text-lg '>{text}</label>
          <input
             type={type}
+            name={name}
             placeholder={placeholder}
             value={value}
             onChange={onChange}
