@@ -4,8 +4,21 @@ import FormButton from '../components/FormButton'
 import { Link } from 'react-router-dom'
 
 const LoginScreen = () => {
-  const handleInput=()=>{
+  const[formdata,setformdata]=useState({email:'',password:''})
 
+  const handleInput=()=>{
+    const {name,value}=e.target
+    setformdata({...formdata,[name]:value})
+  }
+  const handleSubmit=(e)=>{
+    e.preventDefault()
+
+    console.log(formdata)
+
+    setformdata({
+      email:'',
+      password:''
+    })
   }
   return (
     <>
@@ -16,7 +29,7 @@ const LoginScreen = () => {
 
         <FormInput text="Password" type="password" placeholder="Enter your Password" onChange={handleInput}/>
         <div className='my-5'>
-        <FormButton text="Login"/>
+        <FormButton text="Login" onClick={handleSubmit}/>
         <div className='my-3 text-center'> Don't have an account? <Link to='/signup'>Signup</Link></div>
         </div>
 </div>
