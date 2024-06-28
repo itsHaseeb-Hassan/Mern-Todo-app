@@ -1,7 +1,9 @@
 const HOSTNAME="http://localhost:8002/api"
 import axios from "axios"
+import { store } from "../../Redux/store";
 
 export const callPrivateApi=(endpoint,method,data)=>{
+    const token = store.getState().user.loginInfo.token
     const configaxios={
         method:method,
         url:`${HOSTNAME}${endpoint}`,
