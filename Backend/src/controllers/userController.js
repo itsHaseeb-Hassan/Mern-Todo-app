@@ -44,7 +44,7 @@ const createUser=async(req,res,next)=>{
 // Genrate Token refreshToken and accessToken
 
 try {
-    const accessToken= jwt.sign({id:newUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'15m'})
+    const accessToken= jwt.sign({id:newUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'2h'})
     const refreshToken= jwt.sign({id:newUser._id},process.env.JWT_SECRET_REFRESH,{expiresIn:'1d'})
     await newUser.updateOne({refreshToken})
     res.status(201).json({accessToken,refreshToken})  
@@ -78,7 +78,7 @@ try {
     }
     // Genrate Token
     try {
-        const accessToken= jwt.sign({id:existingUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'15m'})
+        const accessToken= jwt.sign({id:existingUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'2h'})
         const refreshToken= jwt.sign({id:existingUser._id},process.env.JWT_SECRET_REFRESH,{expiresIn:'1d'})
         await existingUser.updateOne({refreshToken})
         res.status(201).json({accessToken,refreshToken})  
