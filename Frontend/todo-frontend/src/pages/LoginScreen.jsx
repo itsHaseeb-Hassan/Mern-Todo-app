@@ -2,9 +2,13 @@ import React,{useState} from 'react'
 import FormInput from '../components/FormInput'
 import FormButton from '../components/FormButton'
 import { Link } from 'react-router-dom'
+import { setLoginInfo } from '../Redux/slice/UserSlice'
+import { loginUser } from '../Lib/API/userApi'
+import { useDispatch,useSelector } from 'react-redux'
 
 const LoginScreen = () => {
   const[formdata,setformdata]=useState({email:'',password:''})
+  const dispatch = useDispatch()
 
   const handleInput=(e)=>{
     const {name,value}=e.target
@@ -14,6 +18,18 @@ const LoginScreen = () => {
     e.preventDefault()
 
     console.log(formdata)
+    // loginUser(formdata).then((res)=>{
+    //   console.log("token is this",res)
+      
+    // }).catch((err)=>{
+    //   console.log(err)
+    // })
+   const loginData=async()=>{
+        const res=await loginUser(formdata)
+        console.log("res in console",res)
+        dispatch(setLoginInfo(res))
+   }
+   loginData()
 
     setformdata({
       email:'',

@@ -9,8 +9,10 @@ const initialState = {
 const userSlice = createSlice({
     name: "userSlice",
     initialState,
+    
     reducers: {
         setLoginInfo: (state, action) => {
+            console.log(action.payload)
             state.loginInfo = action.payload
         }
     }
