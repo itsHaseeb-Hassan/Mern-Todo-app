@@ -39,18 +39,18 @@ const createTodo = async (req, res, next) => {
         return next(res.json({ err }));
     }
 };
-    const getAllTodos = async (req, res, next) => {
-        const {userId} = req.body; // Get the userId from the authenticated user
-        console.log(userId)
-        let todos;
-        try {
-            todos = await Todo.find({ userId }); // Find todos by userId
-            res.status(200).json({ todos });
-        } catch (error) {
-            const err = createHttpError(500, "Internal Server Error");
-            return next(err);
-        }
-    };
+const getAllTodos = async (req, res, next) => {
+    const { userId } = req.query; // Get the userId from query parameters
+    console.log("user id is backend", req.query);
+    let todos;
+    try {
+        todos = await Todo.find({ userId }); // Find todos by userId
+        res.status(200).json({ todos });
+    } catch (error) {
+        const err = createHttpError(500, "Internal Server Error");
+        return next(err);
+    }
+};
 const updateTodo = async (req, res, next) => {
     const { id, task } = req.body;
 
