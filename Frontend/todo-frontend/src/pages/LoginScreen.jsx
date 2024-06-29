@@ -1,54 +1,60 @@
-import React,{useState} from 'react'
-import FormInput from '../components/FormInput'
-import FormButton from '../components/FormButton'
-import { Link } from 'react-router-dom'
-import { setLoginInfo } from '../Redux/slice/UserSlice'
-import { loginUser } from '../Lib/API/userApi'
-import { useDispatch,useSelector } from 'react-redux'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import FormInput from '../components/FormInput';
+import FormButton from '../components/FormButton';
+import { setLoginInfo } from '../Redux/slice/UserSlice';
+import { loginUser } from '../Lib/API/userApi';
+import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 const LoginScreen = () => {
-  const[formdata,setformdata]=useState({email:'',password:''})
-  const dispatch = useDispatch()
+  const [formdata, setformdata] = useState({ email: '', password: '' });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleInput=(e)=>{
-    const {name,value}=e.target
-    setformdata({...formdata,[name]:value})
-  }
-  const handleSubmit=(e)=>{
-    e.preventDefault()
+  const handleInput = (e) => {
+    const { name, value } = e.target;
+    setformdata({ ...formdata, [name]: value });
+  };
 
-    console.log(formdata)
-    // loginUser(formdata).then((res)=>{
-    //   console.log("token is this",res)
-      
-    // }).catch((err)=>{
-    //   console.log(err)
-    // })
-   const loginData=async()=>{
-        const res=await loginUser(formdata)
-        console.log("res in console",res)
-        dispatch(setLoginInfo(res))
-   }
-   loginData()
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const loginData = async () => {
+      try {
+        const res = await loginUser(formdata);
+        console.log("res in console", res);
+        dispatch(setLoginInfo(res));
+        navigate('/todos');  // Navigate to /todos after successful login
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    loginData();
 
     setformdata({
-      email:'',
-      password:''
-    })
-  }
+      email: '',
+      password: ''
+    });
+  };
+
   return (
     <>
-            <h1 className='text-center p-9 text-3xl upercase'>Login User</h1>
-            <div className='mx-auto w-[30%] h-[50%] p-4 bg-gray-300 rounded-md backdrop-filter backdrop-blur-md bg-opacity-20'>
-        <FormInput text="Email" type="email" placeholder="Enter your Email" value={formdata.email} name="email" onChange={handleInput}/>
-        <FormInput text="Password" type="password" placeholder="Enter your Password" value={formdata.password} name="password" onChange={handleInput}/>
-        <div className='my-5'>
-        <FormButton text="Login" onClick={handleSubmit}/>
-        <div className='my-3 text-center'> Don't have an account? <Link to='/signup'>Signup</Link></div>
-        </div>
-</div>
+      <h1 className="text-center p-9 text-3xl uppercase">Login User</h1>
+      <div className="mx-auto w-[30%] h-[50%] p-4 bg-gray-300 rounded-md backdrop-filter backdrop-blur-md bg-opacity-20">
+        <form onSubmit={handleSubmit}>
+          <FormInput text="Email" type="email" placeholder="Enter your Email" value={formdata.email} name="email" onChange={handleInput} />
+          <FormInput text="Password" type="password" placeholder="Enter your Password" value={formdata.password} name="password" onChange={handleInput} />
+          <div className="my-5">
+            <FormButton text="Login" />
+            <div className="my-3 text-center">
+              Don't have an account? <Link to="/signup">Signup</Link>
+            </div>
+          </div>
+        </form>
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default LoginScreen
+export default LoginScreen;
