@@ -82,7 +82,7 @@ try {
         const accessToken= jwt.sign({id:existingUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'2h'})
         const refreshToken= jwt.sign({id:existingUser._id},process.env.JWT_SECRET_REFRESH,{expiresIn:'1d'})
         await existingUser.updateOne({refreshToken})
-        res.status(201).json({id:existingUser._id,accessToken,refreshToken})  
+        res.status(200).json({id:existingUser._id,accessToken,refreshToken})  
     } catch (error) {
         const err=createHttpError(500,"Token Generation Failed")
         return next(res.json({err}))

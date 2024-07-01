@@ -7,9 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setTodos } from '../Redux/slice/TodoSlice';
 
 const TodoScreen = () => {
-  const dispatch = useDispatch();
-  const todos = useSelector((state) => state.todo.todos.todos);
-  const userId = useSelector((state) => state.user.loginInfo.id); // Assuming userId is stored in loginInfo
   console.log("user id is",userId)
   console.log("todos in redux",todos);
   
@@ -25,20 +22,6 @@ const TodoScreen = () => {
     // Add logic to handle adding a new task
   };
 
-  useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        const todos = await getTodos(userId);
-        console.log("todos in todo screen",todos)
-        dispatch(setTodos(todos));
-      } catch (error) {
-        console.error('Error fetching todos:', error);
-      }
-    };
-
-    fetchTodos();
-  }, [dispatch, userId]);
-
   return (
     <div>
       <h1 className="text-center p-9 text-3xl uppercase">Add Todo</h1>
@@ -46,7 +29,7 @@ const TodoScreen = () => {
         <FormInput text="Task" type="text" placeholder="Enter your Task" value={formdata.task} name="task" onChange={handleInput} />
         <FormButton text="Add" onClick={handleTask} />
       </div>
-      <TaskTable todos={todos}/>
+      <TaskTable />
     </div>
   );
 };

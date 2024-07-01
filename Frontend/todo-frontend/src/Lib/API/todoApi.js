@@ -36,9 +36,9 @@ export const updateTodo = async (data) => {
 
 export const deleteTodo = async (id) => {
     try {
-        const response = await callPrivateApi(`/todos/delete${id}`, "DELETE");
+        const response = await callPrivateApi('/todos/delete', 'DELETE', { id });
         return response;
     } catch (error) {
         return error;
     }
-}
+};

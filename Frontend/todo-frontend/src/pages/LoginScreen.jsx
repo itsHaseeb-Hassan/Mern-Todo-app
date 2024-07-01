@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import { setLoginInfo } from '../Redux/slice/UserSlice';
@@ -10,7 +9,6 @@ import { Link } from 'react-router-dom';
 const LoginScreen = () => {
   const [formdata, setformdata] = useState({ email: '', password: '' });
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -20,18 +18,20 @@ const LoginScreen = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const loginData = async () => {
-      try {
-        const res = await loginUser(formdata);
-        console.log("res in console", res);
-        dispatch(setLoginInfo(res));
-        navigate('/todos');  // Navigate to /todos after successful login
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    loginData();
+    const { email, password } = formdata;
 
+    const loginUserData=async (data)=>{{
+      try {
+        const response= await loginUser(data)
+        console.log("response is handleSubmit",response)
+        if(response.status===200){
+          dispatch(setLoginInfo(response))
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }}
+    loginUserData({email,password})
     setformdata({
       email: '',
       password: ''

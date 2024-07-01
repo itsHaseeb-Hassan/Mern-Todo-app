@@ -1,14 +1,14 @@
-const HOSTNAME = "http://localhost:8002/api";
 import axios from "axios";
 import { store } from "../Redux/store";
+
+const HOSTNAME = "http://localhost:8002/api";
 
 export const callPrivateApi = (endpoint, method, data = {}) => {
     const token = store.getState().user.loginInfo;
     console.log("Token:", token);
 
-    // Construct URL for GET requests to include userId in query params
     let url = `${HOSTNAME}${endpoint}`;
-    if (method === "GET" && data) {
+    if ((method === 'GET' || method === 'DELETE') && data) {
         const queryParams = new URLSearchParams(data).toString();
         url = `${url}?${queryParams}`;
     }
@@ -18,18 +18,19 @@ export const callPrivateApi = (endpoint, method, data = {}) => {
         url: url,
         headers: {
             Accept: "application/json",
-            "Access-Control-Allow-Origin": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type",
-            "Access-Control-Max-Age": "6000",
-            "Access-Control-Allow-headers": "*",
-            token,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            Authorization: `Bearer ${token}`,
         },
     };
 
-    // Add data to request body if it's not a GET request
-    if (method !== "GET") {
+    console.log("configaxios:", configaxios);
+
+    if (method !== "GET" && method !== "DELETE") {
         configaxios.data = data;
     }
+
+    console.log("Making API request to URL:", url);
 
     return new Promise((resolve, reject) => {
         axios(configaxios)

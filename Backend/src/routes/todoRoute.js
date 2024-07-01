@@ -1,11 +1,11 @@
 import express from "express";
-import { authMidelware } from "../midelwares/authMidelware.js";
+import { authMiddleware } from "../midelwares/authMidelware.js";
 import { createTodo, deleteTodo, getAllTodos, updateTodo } from "../controllers/todoController.js";
 const todoRouter=express.Router()
 
-todoRouter.post('/create', authMidelware,createTodo);
+todoRouter.post('/create', authMiddleware,createTodo);
 todoRouter.get('/getall',getAllTodos);
-todoRouter.put('/update', authMidelware,updateTodo);
-todoRouter.delete('/delete', authMidelware,deleteTodo)
+todoRouter.put('/update', authMiddleware,updateTodo);
+todoRouter.delete('/delete',authMiddleware,deleteTodo)
 
 export default todoRouter
