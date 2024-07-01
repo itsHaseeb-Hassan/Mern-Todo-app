@@ -3,12 +3,12 @@ import { store } from "../Redux/store";
 
 const HOSTNAME = "http://localhost:8002/api";
 
-export const callPrivateApi = (endpoint, method, data = {}) => {
-    const token = store.getState().user.loginInfo;
-    console.log("Token:", token);
+export const callPrivateApi = async (endpoint, method, data = {}) => {
+    const token = store.getState().user.loginInfo?.accessToken;
+    console.log("token in APIendPoint", token);
 
     let url = `${HOSTNAME}${endpoint}`;
-    if ((method === 'GET' || method === 'DELETE') && data) {
+    if ((method === 'GET' || method === 'DELETE' || method === 'POST') && data) {
         const queryParams = new URLSearchParams(data).toString();
         url = `${url}?${queryParams}`;
     }
@@ -24,22 +24,17 @@ export const callPrivateApi = (endpoint, method, data = {}) => {
         },
     };
 
-    console.log("configaxios:", configaxios);
-
-    if (method !== "GET" && method !== "DELETE") {
+    if (method !== "GET" && method !== "DELETE" && method !== "POST") {
         configaxios.data = data;
     }
 
-    console.log("Making API request to URL:", url);
+    console.log("Making API request with config:", configaxios);
 
-    return new Promise((resolve, reject) => {
-        axios(configaxios)
-            .then((response) => {
-                resolve(response.data);
-            })
-            .catch((error) => {
-                console.error("API call error:", error);
-                reject(error);
-            });
-    });
+    try {
+        const response = await axios(configaxios);
+        return response.data;
+    } catch (error) {
+        console.error("API call error:", error);
+        throw error;
+    }
 };

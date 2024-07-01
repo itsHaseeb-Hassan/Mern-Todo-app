@@ -15,27 +15,16 @@ const LoginScreen = () => {
     setformdata({ ...formdata, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const { email, password } = formdata;
-
-    const loginUserData=async (data)=>{{
-      try {
-        const response= await loginUser(data)
-        console.log("response is handleSubmit",response)
-        if(response.status===200){
-          dispatch(setLoginInfo(response))
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }}
-    loginUserData({email,password})
-    setformdata({
-      email: '',
-      password: ''
-    });
+    try {
+      const response = await loginUser(formdata);
+      console.log(response);
+      dispatch(setLoginInfo(response));
+    } catch (error) {
+      console.error(error);
+    }
+    setformdata({ email: '', password: '' });
   };
 
   return (

@@ -2,6 +2,7 @@ import { callPrivateApi } from "../Apiendpoint";
 
 
 export const loginUser=async (data)=>{
+  console.log("data in loginUser",data)
   try {
     const response= await callPrivateApi("/users/login","POST",data)
     return response

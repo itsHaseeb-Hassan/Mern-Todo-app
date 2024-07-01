@@ -17,6 +17,7 @@ export const getTodos = async (userId) => {
 
 
 export const createTodo = async (data) => {
+    console.log("Data in createTodo:", data);
     try {
         const response = await callPrivateApi("/todos/create", "POST", data);
         return response;

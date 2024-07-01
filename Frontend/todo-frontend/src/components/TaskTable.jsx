@@ -1,10 +1,11 @@
 import React from 'react';
 import FormButton from './FormButton';
 import { deleteTodo } from '../Lib/API/todoApi';
-import { useDispatch } from 'react-redux';
+import { useDispatch , useSelector} from 'react-redux';
 import { deleteTodo as deleteTodoAction } from '../Redux/slice/TodoSlice';
 
-const TaskTable = ({ todos }) => {
+const TaskTable = () => {
+    const todos = useSelector((state) => state.todo.todos);
     const dispatch = useDispatch();
     console.log("todos in table", todos);
     
@@ -13,6 +14,7 @@ const TaskTable = ({ todos }) => {
             const response = await deleteTodo(id);
             if (response.status === 200) {
                 dispatch(deleteTodoAction(id));
+                console.log("Todo deleted successfully:", response.data);
             } else {
                 console.error("Failed to delete todo:", response.data);
             }
@@ -22,7 +24,7 @@ const TaskTable = ({ todos }) => {
     }
 
     return (
-        <div className="w-[70%] mx-auto my-5">
+        <div className="w-[70%] mx-auto my-5 pb-7">
             <table className="min-w-full bg-white">
                 <thead>
                     <tr>
@@ -32,8 +34,8 @@ const TaskTable = ({ todos }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {todos.todos.data.todo.map((todo) => (
-                        <tr className="hover:bg-gray-100" key={todo._id}>
+                    {todos?.map((todo,index) => (
+                        <tr className="hover:bg-gray-100" key={todo.index}>
                             <td className="py-2 px-4 border-b border-gray-300">{todo._id}</td>
                             <td className="py-2 px-4 border-b border-gray-300">{todo.task}</td>
                             <td className="py-2 px-4 border-b border-gray-300">

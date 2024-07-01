@@ -44,11 +44,12 @@ const createUser=async(req,res,next)=>{
 // Genrate Token refreshToken and accessToken
 
 try {
-    const accessToken= jwt.sign({id:newUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'2h'})
-    const refreshToken= jwt.sign({id:newUser._id},process.env.JWT_SECRET_REFRESH,{expiresIn:'1d'})
-    await newUser.updateOne({refreshToken})
-    console.log(newUser._id),
-    res.status(201).json({id:newUser._id,accessToken,refreshToken})  
+    // const accessToken= jwt.sign({id:newUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'2h'})
+    // const refreshToken= jwt.sign({id:newUser._id},process.env.JWT_SECRET_REFRESH,{expiresIn:'1d'})
+    // await newUser.updateOne({refreshToken})
+    console.log(newUser._id)
+    res.status(200).json({id:newUser._id});
+    
 } catch (error) {
     const err=createHttpError(500,"Token Generation Failed")
     return next(res.json({err}))
@@ -82,7 +83,8 @@ try {
         const accessToken= jwt.sign({id:existingUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'2h'})
         const refreshToken= jwt.sign({id:existingUser._id},process.env.JWT_SECRET_REFRESH,{expiresIn:'1d'})
         await existingUser.updateOne({refreshToken})
-        res.status(200).json({id:existingUser._id,accessToken,refreshToken})  
+
+        res.status(200).json({id:existingUser._id,accessToken,refreshToken,isLoggedIn:true,status:200});  
     } catch (error) {
         const err=createHttpError(500,"Token Generation Failed")
         return next(res.json({err}))

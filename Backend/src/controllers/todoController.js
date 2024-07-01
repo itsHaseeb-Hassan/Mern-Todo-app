@@ -2,28 +2,30 @@ import Todo from '../models/todoModel.js';
 import createHttpError from 'http-errors';
 
 const createTodo = async (req, res, next) => {
-    const { task, userId } = req.body;
+    const { task, userId } = req.body; // Change from req.query to req.body
+    console.log(task, userId);
     if (!task || !userId) {
-        const error = createHttpError(400, 'All fields are required');
-        return next(res.json({ error }));
+      const error = createHttpError(400, 'All fields are required');
+      return next(res.json({ error }));
     }
     try {
-        const todoExist = await Todo.findOne({ userId, task });
-        if (todoExist) {
-            const error = createHttpError(400, 'Todo already exists for this user');
-            return next(res.json({ error }));
-        }
-        const newTodo = new Todo({
-            userId,
-            task,
-        });
-        const savedTodo = await newTodo.save();
-        res.status(201).json({ savedTodo });
+      const todoExist = await Todo.findOne({ userId, task });
+      if (todoExist) {
+        const error = createHttpError(400, 'Todo already exists for this user');
+        return next(res.json({ error }));
+      }
+      const newTodo = new Todo({
+        userId,
+        task,
+      });
+      const savedTodo = await newTodo.save();
+      res.status(201).json({ savedTodo });
     } catch (error) {
-        const err = createHttpError(500, 'Internal Server Error');
-        return next(res.json({ err }));
+      const err = createHttpError(500, 'Internal Server Error');
+      return next(res.json({ err }));
     }
-};
+  };
+  
 
 const getAllTodos = async (req, res, next) => {
     const { userId } = req.query;
