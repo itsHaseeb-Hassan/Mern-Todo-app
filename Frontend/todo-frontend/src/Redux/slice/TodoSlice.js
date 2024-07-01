@@ -9,13 +9,14 @@ const todoSlice = createSlice({
     initialState,
     reducers: {
         addTodo: (state, action) => {
-            state.todos.push(action.payload);
-        },
-        deleteTodo: (state, action) => {
-            state.todos = state.todos.filter((todo) => todo._id !== action.payload);
+            console.log("Action payload:", action.payload);
+            state.todos.todos.push(action.payload);
         },
         setTodos: (state, action) => {
-            return action.payload;
+            state.todos = action.payload;d
+        },
+        deleteTodo: (state, action) => {
+            state.todos = state.todos.filter(todo => todo._id !== action.payload);
         },
         updateTodo: (state, action) => {
             state.todos = state.todos.map((todo) => {
@@ -31,5 +32,3 @@ const todoSlice = createSlice({
 export const { addTodo, deleteTodo, setTodos, updateTodo } = todoSlice.actions;
 
 export default todoSlice.reducer;
-
-

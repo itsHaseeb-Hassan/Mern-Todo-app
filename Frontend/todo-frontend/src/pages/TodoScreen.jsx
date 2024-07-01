@@ -19,21 +19,15 @@ const TodoScreen = () => {
     setFormdata({ ...formdata, [name]: value });
   };
 
-  useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        const response = await getTodos(userId);
-        console.log("Response in fetchTodos:", response);
-        dispatch(setTodos(response));
-      } catch (error) {
-        console.error("Error fetching todos:", error);
-      }
-    };
-    if (userId) {
-      fetchTodos();
+  const fetchTodos = async () => {
+    try {
+      const response = await getTodos(userId);
+      console.log("Response in fetchTodos:", response);
+      dispatch(setTodos(response));
+    } catch (error) {
+      console.error("Error fetching todos:", error);
     }
-  }, [dispatch, userId]);
-
+  };
   const handleTask = async (userId) => {
 
     const data = { ...formdata, userId };
@@ -41,13 +35,25 @@ const TodoScreen = () => {
     try {
       const response = await createTodo(data); // Ensure createTodo sends a POST request with data in the body
       console.log("Response in handleTask:", response);
-      dispatch(addTodo(response)); // Use addTodo action to append the new todo
+      dispatch(addTodo(response.savedTodo)); // Use addTodo action to append the new todo
+      if(response === true){
+        fetchTodos();
+      }
     } catch (error) {
       console.log("Error in handleTask:", error);
     }
   
     setFormdata({ task: '' });
   };
+
+
+  
+  useEffect(() => {
+
+    if (userId) {
+      fetchTodos();
+    }
+  }, [dispatch, userId]);
 
 
 

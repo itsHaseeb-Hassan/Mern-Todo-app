@@ -32,6 +32,7 @@ export const callPrivateApi = async (endpoint, method, data = {}) => {
 
     try {
         const response = await axios(configaxios);
+        console.log("API response:", response.data);
         return response.data;
     } catch (error) {
         console.error("API call error:", error);

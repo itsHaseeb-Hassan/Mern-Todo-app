@@ -60,7 +60,7 @@ try {
 // login
  const loginUser=async(req,res,next)=>{
 
-    const {email,password}=req.body
+    const {email,password}=req.query
     let existingUser
     try {
         existingUser=await User.findOne({email})

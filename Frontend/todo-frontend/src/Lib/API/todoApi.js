@@ -18,8 +18,13 @@ export const getTodos = async (userId) => {
 
 export const createTodo = async (data) => {
     console.log("Data in createTodo:", data);
+    const userId=data.userId;
+    console.log("user id is",userId)
+     const task=data.task
+    console.log("task is",task)
+
     try {
-        const response = await callPrivateApi("/todos/create", "POST", data);
+        const response = await callPrivateApi("/todos/create", "POST",{userId,task} );
         return response;
     } catch (error) {
         return error;
