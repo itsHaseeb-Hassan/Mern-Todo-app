@@ -1,26 +1,7 @@
 import React from 'react';
 import FormButton from './FormButton';
-import { deleteTodo } from '../Lib/API/todoApi';
-import { useDispatch, useSelector } from 'react-redux';
-import { deleteTodo as deleteTodoAction } from '../Redux/slice/TodoSlice';
 
-const TaskTable = () => {
-    const todos = useSelector((state) => state.todo.todos.todos);
-    const dispatch = useDispatch();
-    console.log("todos in table bhaloo", todos);
-    
-    const handleDelete = async (id) => {
-        try {
-            const response = await deleteTodo(id);
-            if (response.status === 200) {
-                console.log("Todo deleted successfully:", response.data);
-                dispatch(deleteTodoAction(id));
-            }
-        } catch (error) {
-            console.error("Error deleting todo:", error);
-        }
-    }
-
+const TaskTable = ({todos,handleDelete}) => {
     return (
         <div className="w-[70%] mx-auto my-5 pb-7">
             <table className="min-w-full bg-white">

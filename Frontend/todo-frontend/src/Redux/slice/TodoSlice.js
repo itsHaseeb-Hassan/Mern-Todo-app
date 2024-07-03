@@ -12,11 +12,12 @@ const todoSlice = createSlice({
             console.log("Action payload:", action.payload);
             state.todos.todos.push(action.payload);
         },
-        setTodos: (state, action) => {
-            state.todos = action.payload;d
-        },
+        
         deleteTodo: (state, action) => {
-            state.todos = state.todos.filter(todo => todo._id !== action.payload);
+            state.todos = state.todos.todos.filter(todo => todo._id !== action.payload);
+        },
+        setTodos: (state, action) => {
+            state.todos = action.payload;
         },
         updateTodo: (state, action) => {
             state.todos = state.todos.map((todo) => {

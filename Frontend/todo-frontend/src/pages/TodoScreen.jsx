@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import TaskTable from '../components/TaskTable';
-import { getTodos, createTodo } from '../Lib/API/todoApi';
+import { getTodos, createTodo,deleteTodo } from '../Lib/API/todoApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setTodos, addTodo } from '../Redux/slice/TodoSlice';
+import { setTodos, addTodo,deleteTodo as deleteTodoAction } from '../Redux/slice/TodoSlice';
 import { setLoginInfo } from '../Redux/slice/UserSlice';
 
 const TodoScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userId = useSelector((state) => state.user.loginInfo.id);
+  const todos = useSelector((state) => state.todo.todos.todos);
+    console.log("todos in table bhaloo", todos);
   const [formdata, setFormdata] = useState({ task: '' });
 
   const handleInput = (e) => {
@@ -45,7 +47,19 @@ const TodoScreen = () => {
   
     setFormdata({ task: '' });
   };
-
+  const handleDelete = async (id) => {
+  debugger;
+    try {
+        const response = await deleteTodo(id);
+        console.log("Response in handleDelete:", response);
+        if(response.deletedTodo._id === id){
+          dispatch(deleteTodoAction(id));
+          fetchTodos();
+        }
+    } catch (error) {
+        console.error("Error deleting todo:", error);
+    }
+}
 
   
   useEffect(() => {
@@ -70,7 +84,7 @@ const TodoScreen = () => {
         <FormInput text="Task" type="text" placeholder="Enter your Task" value={formdata.task} name="task" onChange={handleInput} />
         <FormButton text="Add Task" onClick={() => handleTask(userId)} />
       </div>
-      <TaskTable />
+      <TaskTable todos={todos} handleDelete={handleDelete}/>
     </div>
   );
 };
