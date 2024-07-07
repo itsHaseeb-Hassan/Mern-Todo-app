@@ -28,6 +28,33 @@ const createTodo = async (req, res, next) => {
       return next(res.json({ err }));
     }
   };
+
+  const completeTodo = async (req, res, next) => {
+    const { id } = req.query;
+    if (!id) {
+      const error = createHttpError(400, 'All fields are required');
+      return next(error);
+    }
+    try {
+      // Find the todo item by id
+      const todo = await Todo.findById(id);
+      if (!todo) {
+        const error = createHttpError(404, 'Todo not found');
+        return next(error);
+      }
+  
+      // Toggle the completed status
+      todo.completed = !todo.completed;
+  
+      // Save the updated todo item
+      const updatedTodo = await todo.save();
+  
+      res.status(200).json({ updatedTodo });
+    } catch (error) {
+      const err = createHttpError(500, 'Internal Server Error');
+      return next(err);
+    }
+  };
   
 
 const getAllTodos = async (req, res, next) => {
@@ -41,19 +68,7 @@ const getAllTodos = async (req, res, next) => {
     }
 };
 
-const getSingleTodo = async (req, res, next) => {
-    const { id } = req.query;
-    try {
-        const todo = await Todo.findById(id);
-        if (!todo) {
-            return res.status(404).json({ error: 'Todo not found' });
-        }
-        res.status(200).json({ todo });
-    } catch (error) {
-        const err = createHttpError(500, 'Internal Server Error');
-        return next(res.json({ err }));
-    }
-}
+
 
 const updateTodo = async (req, res, next) => {
   console.log("request of update todo body", req.body);
@@ -88,4 +103,4 @@ const deleteTodo = async (req, res, next) => {
     }
 };
 
-export { createTodo, getAllTodos, updateTodo, deleteTodo, getSingleTodo };
+export { createTodo, getAllTodos, updateTodo, deleteTodo, completeTodo };
