@@ -7,11 +7,7 @@ export const callPrivateApi = async (endpoint, method, data = {}) => {
     const token = store.getState().user.loginInfo?.accessToken;
     console.log("token in APIendPoint", token);
 
-    let url = `${HOSTNAME}${endpoint}`;
-    if ((method === 'GET' || method === 'DELETE' || method === 'POST') && data) {
-        const queryParams = new URLSearchParams(data).toString();
-        url = `${url}?${queryParams}`;
-    }
+    const url = `${HOSTNAME}${endpoint}`;
 
     const configaxios = {
         method: method,
@@ -24,8 +20,11 @@ export const callPrivateApi = async (endpoint, method, data = {}) => {
         },
     };
 
-    if (method !== "GET" && method !== "DELETE" && method !== "POST") {
-        configaxios.data = data;
+    if (method === "POST" || method === "PUT") {
+        configaxios.headers["Content-Type"] = "application/json";
+        configaxios.data = JSON.stringify(data);
+    } else if (method === "GET" || method === "DELETE") {
+        configaxios.params = data;
     }
 
     console.log("Making API request with config:", configaxios);

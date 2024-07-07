@@ -2,9 +2,9 @@ import Todo from '../models/todoModel.js';
 import createHttpError from 'http-errors';
 
 const createTodo = async (req, res, next) => {
-  console.log("create todo req query", req.query);
+  console.log("create todo req query", req.body);
 
-    const { task, userId } = req.query; // Change from req.query to req.body
+    const { task, userId } = req.body; // Change from req.query to req.body
     console.log(task, userId);
     if (!task || !userId) {
       const error = createHttpError(400, 'All fields are required');
@@ -41,20 +41,38 @@ const getAllTodos = async (req, res, next) => {
     }
 };
 
-const updateTodo = async (req, res, next) => {
-    const { id, task } = req.body;
-    if (!id || !task) {
-        const error = createHttpError(400, 'All fields are required');
-        return next(res.json({ error }));
-    }
+const getSingleTodo = async (req, res, next) => {
+    const { id } = req.query;
     try {
-        const updatedTodo = await Todo.findByIdAndUpdate(id, { task }, { new: true });
-        res.status(200).json({ updatedTodo });
+        const todo = await Todo.findById(id);
+        if (!todo) {
+            return res.status(404).json({ error: 'Todo not found' });
+        }
+        res.status(200).json({ todo });
     } catch (error) {
         const err = createHttpError(500, 'Internal Server Error');
         return next(res.json({ err }));
     }
+}
+
+const updateTodo = async (req, res, next) => {
+  console.log("request of update todo body", req.body);
+  const { id, task } = req.body;
+  console.log("id, task", id, task);
+  if (!id || !task) {
+    const error = createHttpError(400, 'All fields are required');
+    return next(error);
+  }
+  try {
+    const updatedTodo = await Todo.findByIdAndUpdate(id, { task }, { new: true });
+    res.status(200).json({ updatedTodo });
+    console.log("updatedTodo", updatedTodo);
+  } catch (error) {
+    const err = createHttpError(500, 'Internal Server Error');
+    return next(err);
+  }
 };
+
 
 const deleteTodo = async (req, res, next) => {
     const { id } = req.query;
@@ -70,4 +88,4 @@ const deleteTodo = async (req, res, next) => {
     }
 };
 
-export { createTodo, getAllTodos, updateTodo, deleteTodo };
+export { createTodo, getAllTodos, updateTodo, deleteTodo, getSingleTodo };

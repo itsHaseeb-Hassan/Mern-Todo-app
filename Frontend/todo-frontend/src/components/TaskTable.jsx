@@ -1,7 +1,7 @@
 import React from 'react';
 import FormButton from './FormButton';
 
-const TaskTable = ({todos,handleDelete}) => {
+const TaskTable = ({todos,handleDelete ,handleUpdate}) => {
     return (
         <div className="w-[70%] mx-auto my-5 pb-7">
             <table className="min-w-full bg-white">
@@ -20,7 +20,7 @@ const TaskTable = ({todos,handleDelete}) => {
                             <td className="py-2 px-4 border-b border-gray-300">
                                 <div className="flex space-x-2">
                                     <FormButton text="Delete" onClick={() => handleDelete(todo._id)} />
-                                    <FormButton text="Update" />
+                                    <FormButton text="Update" onClick={() => handleUpdate(todo)}/>
                                     <FormButton text="Complete" />
                                 </div>
                             </td>

@@ -32,8 +32,9 @@ export const createTodo = async (data) => {
 }
 
 export const updateTodo = async (data) => {
+    console.log("Data in updateTodo todoApi:", data);
     try {
-        const response = await callPrivateApi(`/todos/update${data._id}`, "PUT", data);
+        const response = await callPrivateApi(`/todos/update`, "PUT", data);
         return response;
     } catch (error) {
         return error;
