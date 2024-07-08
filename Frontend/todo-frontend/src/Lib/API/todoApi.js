@@ -49,3 +49,12 @@ export const deleteTodo = async (id) => {
         return error;
     }
 };
+export const completeTodo = async (id) => {
+    console.log("ID in completeTodo:", id);
+    try {
+        const response = await callPrivateApi('/todos/complete', 'POST', {id:id} );
+        return response;
+    } catch (error) {
+        return error;
+    }
+}

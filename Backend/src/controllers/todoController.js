@@ -30,7 +30,8 @@ const createTodo = async (req, res, next) => {
   };
 
   const completeTodo = async (req, res, next) => {
-    const { id } = req.query;
+    const { id } = req.body;
+    console.log("id", id);
     if (!id) {
       const error = createHttpError(400, 'All fields are required');
       return next(error);

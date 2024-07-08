@@ -20,7 +20,7 @@ function App() {
   }, [ accessToken, navigate]);
 
   return (
-    <div className="bg-blue-300 w-full h-full">
+    <div className="bg-blue-300 w-full h-[100vh]">
       <Routes>
         <Route path='/' element={<LoginScreen />} />
         <Route path='/signup' element={<SignupScreen />} />

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import TaskTable from '../components/TaskTable';
-import { getTodos, createTodo, deleteTodo, updateTodo } from '../Lib/API/todoApi';
+import { getTodos, createTodo, deleteTodo, updateTodo,completeTodo } from '../Lib/API/todoApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setTodos, addTodo, deleteTodo as deleteTodoAction, updateTodo as updateTodoAction } from '../Redux/slice/TodoSlice';
+import { setTodos, addTodo, deleteTodo as deleteTodoAction, updateTodo as updateTodoAction,completeTodos } from '../Redux/slice/TodoSlice';
 import { setLoginInfo } from '../Redux/slice/UserSlice';
 
 const TodoScreen = () => {
@@ -97,6 +97,23 @@ const TodoScreen = () => {
     setUpdateId(todo._id);
   };
 
+  const handleComplete = async (todo) => {
+    const id = todo._id;
+    console.log("ID in handleComplete:", id);
+    try {
+      const response = await completeTodo(id);
+      console.log("Response in handleComplete:", response);
+
+      if (response && response.updatedTodo && response.updatedTodo._id === id) {
+        dispatch(completeTodos(response.updatedTodo.completed));
+        fetchTodos();
+      } else {
+        console.warn("Completed todo ID does not match data ID");
+      }
+    } catch (error) {
+      console.error("Error completing todo:", error);
+    }
+  };
 
 
   const handleLogout = () => {
@@ -116,7 +133,7 @@ const TodoScreen = () => {
           <FormButton text="Add Task" onClick={() => handleTask(userId)} />
         )}
       </div>
-      <TaskTable todos={todos} handleDelete={handleDelete} handleUpdate={prepareUpdate} />
+      <TaskTable todos={todos} handleDelete={handleDelete} handleUpdate={prepareUpdate} handleComplete={handleComplete} />
     </div>
   );
 };
