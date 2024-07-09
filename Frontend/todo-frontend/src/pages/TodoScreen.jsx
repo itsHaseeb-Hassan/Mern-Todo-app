@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setTodos, addTodo, deleteTodo as deleteTodoAction, updateTodo as updateTodoAction,completeTodos } from '../Redux/slice/TodoSlice';
 import { setLoginInfo } from '../Redux/slice/UserSlice';
+import NavBar from '../components/NavBar';
 
 const TodoScreen = () => {
   const dispatch = useDispatch();
@@ -123,7 +124,7 @@ const TodoScreen = () => {
 
   return (
     <div>
-      <FormButton text="Logout" onClick={handleLogout} />
+      <NavBar handleLogout={handleLogout}/>
       <h1 className="text-center p-9 text-3xl uppercase">Add Todo</h1>
       <div className="mx-auto w-[30%] h-[50%] p-4 bg-gray-300 rounded-md backdrop-filter backdrop-blur-md bg-opacity-20">
         <FormInput text="Task" type="text" placeholder="Enter your Task" value={formdata.task} name="task" onChange={handleInput} />

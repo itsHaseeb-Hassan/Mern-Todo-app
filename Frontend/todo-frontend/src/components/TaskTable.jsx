@@ -1,7 +1,5 @@
 import React from 'react';
 import FormButton from './FormButton';
-import { useSelector } from 'react-redux';
-
 const TaskTable = ({ todos, handleDelete, handleUpdate, handleComplete }) => {
     return (
         <div className="w-[70%] mx-auto my-5 pb-7">

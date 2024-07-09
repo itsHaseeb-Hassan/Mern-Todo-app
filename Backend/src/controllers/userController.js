@@ -4,11 +4,14 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 const createUser=async(req,res,next)=>{
-
     const {name,email,password}=req.body
+    const profileImage=req.file.filename
+    console.log(profileImage)
+      
+    console.log(name,email,password)
 // Validation
     try {
-        if(!name || !email || !password){
+        if(!name || !email || !password || !profileImage){
         const error=createHttpError(400,"All Fields Are Required")
         return next(res.json({error}))
         }
@@ -35,7 +38,9 @@ const createUser=async(req,res,next)=>{
      newUser=await User.create({
         name,
         email,
-        password:hashedPassword
+        password:hashedPassword,
+        profileImage
+
     })
    } catch (error) {
      const err=createHttpError(500,"User Creation Failed")
@@ -55,7 +60,11 @@ try {
     return next(res.json({err}))
 }
 
+
 }
+
+
+export default createUser;
 
 // login
  const loginUser=async(req,res,next)=>{
