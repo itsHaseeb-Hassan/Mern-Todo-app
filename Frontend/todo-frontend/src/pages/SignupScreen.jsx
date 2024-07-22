@@ -30,16 +30,16 @@ const SignupScreen = () => {
         } catch (error) {
             console.error(error);
         }
+
+        setFormData({
+            name: '',
+            email: '',
+            password: '',
+            profileImage: null,
+        });
     };
 
     return (
-        // <form onSubmit={handleSubmit}>
-        //     <input type="text" name="name" placeholder="Name" onChange={handleChange} />
-        //     <input type="email" name="email" placeholder="Email" onChange={handleChange} />
-        //     <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-        //     <input type="file" name="profileImage" onChange={handleChange} />
-        //     <button type="submit">Sign Up</button>
-        // </form>
         <div>
       <h1 className='text-center p-9 text-3xl uppercase'>Signup User</h1>
       <form onSubmit={handleSubmit} encType='multipart/form-data'>
