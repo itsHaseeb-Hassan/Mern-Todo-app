@@ -7,6 +7,7 @@ import {cloudinary} from '../config/cloundinary/cloudinary.js'
 
 const createUser = async (req, res, next) => {
     const { name, email, password } = req.body;
+    console.log("req.body", req.files);
     const profileImage = req.file;
 
     console.log(name, email, password, profileImage);
