@@ -1,102 +1,88 @@
-import User from '../models/userModel.js'
-import createHttpError from 'http-errors'
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import User from '../models/userModel.js';
+import createHttpError from 'http-errors';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import {cloudinary} from '../config/cloundinary/cloudinary.js'
 
-const createUser=async(req,res,next)=>{
-    const {name,email,password}=req.body
-    const profileImage=req.file.filename
-    console.log(profileImage)
-      
-    console.log(name,email,password)
-// Validation
-    try {
-        if(!name || !email || !password || !profileImage){
-        const error=createHttpError(400,"All Fields Are Required")
-        return next(res.json({error}))
-        }
-    } catch (error) {
-        const err=createHttpError(500,"Internal Server Error")
-        return next(res.json({err}))
+
+const createUser = async (req, res, next) => {
+    const { name, email, password } = req.body;
+    const profileImage = req.file;
+
+    console.log(name, email, password, profileImage);
+
+    if (!name || !email || !password || !profileImage) {
+        return next(createHttpError(400, "All Fields Are Required"));
     }
-    // check if User Exist
-    let existingUser
+
     try {
-        existingUser=await User.findOne({email})
-        if(existingUser){
-            const err=createHttpError(400,"User Already Exist")
-            return next(res.json({err}))
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return next(createHttpError(400, "User Already Exists"));
         }
-    } catch (error) {
-        const err=createHttpError(500,"Existing User Check Failed")
-        return next(res.json({err}))
-    }
-// Hash Password
-   const hashedPassword=await bcrypt.hash(password,10)
-   let newUser;
-   try {
-     newUser=await User.create({
-        name,
-        email,
-        password:hashedPassword,
-        profileImage
 
-    })
-   } catch (error) {
-     const err=createHttpError(500,"User Creation Failed")
-     return next(res.json({err}))
-   }
-// Genrate Token refreshToken and accessToken
+        const filePath = profileImage.path;
+        let result;
+        try {
+            result=await cloudinary.uploader.upload(filePath, {
+                folder: "users",
+            }
+            )
+        } catch (error) {
+            return next(createHttpError(500, "Image Upload Failed"));
+        }
 
-try {
-    // const accessToken= jwt.sign({id:newUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'2h'})
+       
+
+            try {
+                const hashedPassword = await bcrypt.hash(password, 10);
+
+                const newUser = await User.create({
+                    name,
+                    email,
+                    password: hashedPassword,
+                    profileImage: result.secure_url,
+                });
+
+                // const accessToken= jwt.sign({id:newUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'2h'})
     // const refreshToken= jwt.sign({id:newUser._id},process.env.JWT_SECRET_REFRESH,{expiresIn:'1d'})
     // await newUser.updateOne({refreshToken})
     console.log(newUser._id)
     res.status(200).json({id:newUser._id});
-    
-} catch (error) {
-    const err=createHttpError(500,"Token Generation Failed")
-    return next(res.json({err}))
-}
+            } catch (hashError) {
+                console.error('User creation error:', hashError);
+                return next(createHttpError(500, "User Creation Failed"));
+            }
+    } catch (error) {
+        console.error('User creation error:', error);
+        return next(createHttpError(500, "User Creation Failed"));
+    }
+};
 
+const loginUser = async (req, res, next) => {
+    const { email, password } = req.body;
 
-}
-
-
-export default createUser;
-
-// login
- const loginUser=async(req,res,next)=>{
-
-    const {email,password}=req.body
-    let existingUser
     try {
-        existingUser=await User.findOne({email})
-        if(!existingUser){
-            const err=createHttpError(400,"User Does Not Exist")
-            return next(res.json({err}))
+        const existingUser = await User.findOne({ email });
+        if (!existingUser) {
+            return next(createHttpError(400, "User Does Not Exist"));
         }
-    } catch (error) {
-        const err=createHttpError(500,"Login Failed")
-        return next(res.json({err}))
-    }
-    // Compare Password
-    const isPasswordCorrect=await bcrypt.compare(password,existingUser.password)
-    if(!isPasswordCorrect){
-        const err=createHttpError(400,"Wrong Password")
-        return next(res.json({err}))
-    }
-    // Genrate Token
-    try {
-        const accessToken= jwt.sign({id:existingUser._id},process.env.JWT_SECRET_ACCESS,{expiresIn:'2h'})
-        const refreshToken= jwt.sign({id:existingUser._id},process.env.JWT_SECRET_REFRESH,{expiresIn:'1d'})
-        await existingUser.updateOne({refreshToken})
 
-        res.status(200).json({id:existingUser._id,accessToken,refreshToken,isLoggedIn:true,status:200});  
+        const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
+        if (!isPasswordCorrect) {
+            return next(createHttpError(400, "Wrong Password"));
+        }
+
+        const accessToken = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET_ACCESS, { expiresIn: '2h' });
+        const refreshToken = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET_REFRESH, { expiresIn: '1d' });
+
+        await existingUser.updateOne({ refreshToken });
+
+        res.status(200).json({ id: existingUser._id, accessToken, refreshToken, isLoggedIn: true, status: 200 });
     } catch (error) {
-        const err=createHttpError(500,"Token Generation Failed")
-        return next(res.json({err}))
+        console.error('Login error:', error);
+        return next(createHttpError(500, "Login Failed"));
     }
- }
-export {createUser,loginUser}
+};
+
+export { createUser, loginUser };
