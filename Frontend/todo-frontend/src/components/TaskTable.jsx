@@ -15,7 +15,7 @@ const TaskTable = ({ todos, handleDelete, handleUpdate, handleComplete }) => {
                     {todos?.map((todo, index) => (
                         <tr className="hover:bg-gray-100" key={index}>
                             <td className="py-2 px-4 border-b border-gray-300">{index+1}</td>
-                            <td className={`${todo.completed ? 'line-through' : ''} py-2 px-4 border-b border-gray-300`}>{todo?.task}</td>
+                            <td className={`${todo?.completed ? 'line-through' : ''} py-2 px-4 border-b border-gray-300`}>{todo?.task}</td>
                             <td className="py-2 px-4 border-b border-gray-300">
                                 <div className="flex space-x-2">
                                     <FormButton text="Delete" onClick={() => handleDelete(todo._id)} />

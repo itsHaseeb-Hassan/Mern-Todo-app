@@ -1,13 +1,23 @@
 import { callPrivateApi } from "../Apiendpoint";
+import { toast } from "react-toastify";
 
 
 export const loginUser=async (data)=>{
   console.log("data in loginUser",data)
   try {
     const response= await callPrivateApi("/users/login","POST",data)
-    return response
+    if (response.success === true) {
+      return {
+          res: response.data
+      }
+  }
+  else {
+      toast.error(response.message)
+  }
   } catch (error) {
-    return error;
+      const err = error
+      toast.error(err)
+
   }
  
 }

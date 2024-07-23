@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import TaskTable from '../components/TaskTable';
-import { getTodos, createTodo, deleteTodo, updateTodo, completeTodo } from '../Lib/API/todoApi';
+import { getTodos, createTodo, deleteTodo, updateTodo,completeTodo } from '../Lib/API/todoApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setTodos, addTodo, deleteTodo as deleteTodoAction, updateTodo as updateTodoAction, completeTodo as completeTodoAction } from '../Redux/slice/TodoSlice';
+import { setTodos, addTodo, deleteTodo as deleteTodoAction, updateTodo as updateTodoAction,completeTodos } from '../Redux/slice/TodoSlice';
 import { setLoginInfo } from '../Redux/slice/UserSlice';
 import NavBar from '../components/NavBar';
 
@@ -35,14 +35,14 @@ const TodoScreen = () => {
     }
   };
 
-  const handleTask = async () => {
+  const handleTask = async (userId) => {
     const data = { ...formdata, userId };
     console.log("Data in handleTask:", data);
     try {
       const response = await createTodo(data);
       console.log("Response in handleTask:", response);
       dispatch(addTodo(response.savedTodo));
-      if (response) {
+      if(response === true){
         fetchTodos();
       }
     } catch (error) {
@@ -55,7 +55,7 @@ const TodoScreen = () => {
     try {
       const response = await deleteTodo(id);
       console.log("Response in handleDelete:", response);
-      if (response.deletedTodo._id === id) {
+      if(response.deletedTodo._id === id){
         dispatch(deleteTodoAction(id));
         fetchTodos();
       }
@@ -63,15 +63,19 @@ const TodoScreen = () => {
       console.error("Error deleting todo:", error);
     }
   };
-
+  useEffect(() => {
+    if (userId) {
+      fetchTodos();
+    }
+  }, [dispatch, userId]);
   const handleUpdate = async () => {
     const data = { id: updateId, task: formdata.task };
     console.log("Data in handleUpdate:", data);
-
+  
     try {
       const response = await updateTodo(data);
       console.log("Response in handleUpdate:", response);
-
+  
       if (response && response.updatedTodo && response.updatedTodo._id === updateId) {
         dispatch(updateTodoAction(response.updatedTodo));
         fetchTodos();
@@ -81,11 +85,12 @@ const TodoScreen = () => {
     } catch (error) {
       console.error("Error updating todo:", error);
     }
-
+  
     setIsUpdate(false);
     setFormdata({ task: '' });
     setUpdateId(null);
   };
+  
 
   const prepareUpdate = (todo) => {
     setFormdata({ task: todo.task });
@@ -101,7 +106,7 @@ const TodoScreen = () => {
       console.log("Response in handleComplete:", response);
 
       if (response && response.updatedTodo && response.updatedTodo._id === id) {
-        dispatch(completeTodoAction(response.updatedTodo));
+        dispatch(completeTodos(response.updatedTodo.completed));
         fetchTodos();
       } else {
         console.warn("Completed todo ID does not match data ID");
@@ -111,16 +116,11 @@ const TodoScreen = () => {
     }
   };
 
+
   const handleLogout = () => {
     dispatch(setLoginInfo({}));
     navigate('/');
   };
-
-  useEffect(() => {
-    if (userId) {
-      fetchTodos();
-    }
-  }, [dispatch, userId]);
 
   return (
     <div>
@@ -131,7 +131,7 @@ const TodoScreen = () => {
         {isUpdate ? (
           <FormButton text="Update Todo" onClick={handleUpdate} />
         ) : (
-          <FormButton text="Add Task" onClick={handleTask} />
+          <FormButton text="Add Task" onClick={() => handleTask(userId)} />
         )}
       </div>
       <TaskTable todos={todos} handleDelete={handleDelete} handleUpdate={prepareUpdate} handleComplete={handleComplete} />
@@ -140,4 +140,3 @@ const TodoScreen = () => {
 };
 
 export default TodoScreen;
-

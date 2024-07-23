@@ -66,7 +66,9 @@ const loginUser = async (req, res, next) => {
     try {
         const existingUser = await User.findOne({ email });
         if (!existingUser) {
-            return next(createHttpError(400, "User Does Not Exist"));
+            // return next(createHttpError(400, "User Does Not Exist"));
+            res.send({ status: 400, message: "User Does Not Exist" });
+            // res.status(400).json({ message: "User Does Not Exist" });
         }
 
         const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
@@ -79,7 +81,7 @@ const loginUser = async (req, res, next) => {
 
         await existingUser.updateOne({ refreshToken });
 
-        res.status(200).json({ id: existingUser._id, accessToken, refreshToken, isLoggedIn: true, status: 200 });
+        res.status(200).json({ id: existingUser._id, name: existingUser.name, profileImage: existingUser.profileImage, accessToken, refreshToken, isLoggedIn: true, status: 200 });
     } catch (error) {
         console.error('Login error:', error);
         return next(createHttpError(500, "Login Failed"));
